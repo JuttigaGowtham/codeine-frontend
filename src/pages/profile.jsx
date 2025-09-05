@@ -21,7 +21,7 @@ export default function Profile() {
       setIsLoading(false);
       return;
     }
-    fetch("https://codeine-backend.onrender.com/leaderboard")
+    fetch("https://codeine-backend-1.onrender.com/leaderboard")
       .then((res) => res.json())
       .then((data) => {
         setLeaderboardData(data);

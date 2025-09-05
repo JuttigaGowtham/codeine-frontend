@@ -26,7 +26,7 @@ export default function App() {
   const fetchSolvedProblems = useCallback(async () => {
     if (!rollNo) return;
     try {
-      const res = await axios.get(`https://codeine-backend.onrender.com/user/${rollNo}`);
+      const res = await axios.get(`https://codeine-backend-1.onrender.com/user/${rollNo}`);
       setSolved(res.data.solvedProblems || []);
     } catch (error) {
       console.error("Error fetching solved problems", error);

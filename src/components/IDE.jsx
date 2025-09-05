@@ -31,7 +31,7 @@ export default function IDE() {
   useEffect(() => {
     const rollNo = localStorage.getItem("rollNo");
     if (rollNo) {
-      axios.get(`https://codeine-backend.onrender.com/user/${rollNo}`).then((res) => {
+      axios.get(`https://codeine-backend-1.onrender.com/user/${rollNo}`).then((res) => {
         const solved = res.data.solvedProblems || [];
         setCompleted(solved);
 
@@ -97,7 +97,7 @@ output_text
 
   const runSingleNonPython = async (input) => {
     try {
-      const response = await axios.post("https://codeine-backend.onrender.com/run", {
+      const response = await axios.post("https://codeine-backend-1.onrender.com/run", {
         language,
         code,
         input,
@@ -191,7 +191,7 @@ output_text
       }
 
       try {
-        await axios.post("https://codeine-backend.onrender.com/updateProgress", {
+        await axios.post("https://codeine-backend-1.onrender.com/updateProgress", {
           rollNo,
           problemId,
         });

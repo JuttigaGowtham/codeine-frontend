@@ -14,7 +14,7 @@ export default function Register() {
   const handleRegister = async () => {
   // Loading animation removed
     try {
-      const res = await axios.post("https://codeine-backend.onrender.com/auth/register", { rollNo, name, password });
+      const res = await axios.post("https://codeine-backend-1.onrender.com/auth/register", { rollNo, name, password });
       setMsg(res.data.message);
       setTimeout(() => navigate("/login"), 1500);
     } catch (err) {

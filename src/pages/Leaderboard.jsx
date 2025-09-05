@@ -35,7 +35,7 @@ export default function Leaderboard() {
     const fetchData = async () => {
       try {
         setIsLoading(true);
-        const res = await axios.get("https://codeine-backend.onrender.com/leaderboard");
+        const res = await axios.get("https://codeine-backend-1.onrender.com/leaderboard");
         setData(res.data);
         setLastUpdated(
           new Date().toLocaleString("en-US", { timeZone: "Asia/Kolkata" })
