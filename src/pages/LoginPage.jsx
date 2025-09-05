@@ -15,7 +15,7 @@ export default function Login() {
     setMsg("");
 
     try {
-      const res = await axios.post("https://codeine-backend-1.onrender.com/auth/login", {
+      const res = await axios.post("https://codeine-backend-2.onrender.com/auth/login", {
         rollNo,
         password,
       });
