@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Codeine - Online Python Practice IDE</title>
+    <link rel="icon" href="./assests//codeine.jpeg" type="image/png" />
+    <meta
+      name="description"
+      content="Codeine - A simple online Python IDE for students to practice coding problems and learn programming."
+    />
+    <meta
+      name="keywords"
+      content="Codeine, Python IDE, Online Code Editor, Coding Practice, Learn Python"
+    />
+    <meta name="author" content="Your Name or Team" />
+    <script src="https://cdn.jsdelivr.net/pyodide/v0.23.2/full/pyodide.js"></script>
+    <style>
+      body {
+        margin: 0;
+        font-family: "Inter", sans-serif;
+        background: #0f172a;
+        color: #fff;
+      }
+      #splash-screen {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        background: #0f172a;
+        flex-direction: column;
+      }
+      #splash-screen img {
+        width: 120px;
+        height: auto;
+        margin-bottom: 20px;
+      }
+      #splash-screen h1 {
+        font-size: 24px;
+        font-weight: 700;
+        color: #38bdf8;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Splash screen -->
+    <div id="splash-screen">
+      <img src="./assests/codeine.jpeg" alt="Codeine Logo" />
+      <h1>Loading Codeine...</h1>
+    </div>
+
+    <div id="root" style="display:none;"></div>
+
+    <script>
+      // Remove splash screen when React app loads
+      window.addEventListener("DOMContentLoaded", () => {
+        const root = document.getElementById("root");
+        const splash = document.getElementById("splash-screen");
+        root.style.display = "block";
+        splash.style.display = "none";
+      });
+    </script>
+  </body>
+</html>
