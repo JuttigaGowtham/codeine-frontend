@@ -25,7 +25,6 @@ export default function IDE() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [editorKey, setEditorKey] = useState(0);
-  const [language, setLanguage] = useState("python");
 
   // ---------- INITIAL LOAD ----------
   useEffect(() => {
@@ -41,14 +40,13 @@ export default function IDE() {
         const idx = firstUnsolvedIndex !== -1 ? firstUnsolvedIndex : 0;
 
         const savedData = JSON.parse(localStorage.getItem("savedCodes") || "{}");
-        const savedCode =
-          savedData[`${rollNo}-${problems[idx].id}-${language}`];
-        setCode(savedCode || problems[idx].starterCode?.[language] || "");
+        const savedCode = savedData[`${rollNo}-${problems[idx].id}-python`];
+        setCode(savedCode || problems[idx].starterCode?.python || "");
         setCurrentIdx(idx);
         setEditorKey((prev) => prev + 1);
       });
     }
-  }, [language]);
+  }, []);
 
   // ---------- LOAD PYODIDE ----------
   useEffect(() => {
@@ -95,22 +93,9 @@ output_text
     }
   };
 
-  const runSingleNonPython = async (input) => {
-    try {
-      const response = await axios.post("https://codeine-backend-2.onrender.com/run", {
-        language,
-        code,
-        input,
-      });
-      return response.data.output;
-    } catch (err) {
-      return `Error: ${err.response?.data?.error || err.message}`;
-    }
-  };
-
   const validateCode = () => {
     if (!code || code.trim() === "") {
-      showWarning(`⚠️ Please write some ${language} code before running.`);
+      showWarning(`⚠️ Please write some Python code before running.`);
       return false;
     }
     return true;
@@ -121,10 +106,8 @@ output_text
     setIsLoading(true);
     const firstCase = problems[currentIdx].testCases[0];
     let output;
-    if (language === "python" && pyodide) {
+    if (pyodide) {
       output = await runSinglePython(firstCase.input);
-    } else {
-      output = await runSingleNonPython(firstCase.input);
     }
     setResults([
       {
@@ -145,10 +128,10 @@ output_text
     const nextIndex = nextUnsolved !== -1 ? nextUnsolved : 0;
     const rollNo = localStorage.getItem("rollNo");
     const savedData = JSON.parse(localStorage.getItem("savedCodes") || "{}");
-    const savedCode = savedData[`${rollNo}-${problems[nextIndex].id}-${language}`];
+    const savedCode = savedData[`${rollNo}-${problems[nextIndex].id}-python`];
 
     setCurrentIdx(nextIndex);
-    setCode(savedCode || problems[nextIndex].starterCode?.[language] || "");
+    setCode(savedCode || problems[nextIndex].starterCode?.python || "");
     setResults([]);
     setFinalResult("");
     setEditorKey((prev) => prev + 1);
@@ -163,10 +146,8 @@ output_text
 
     for (const test of problems[currentIdx].testCases) {
       let result;
-      if (language === "python" && pyodide) {
+      if (pyodide) {
         result = await runSinglePython(test.input);
-      } else {
-        result = await runSingleNonPython(test.input);
       }
       const pass = result.trim() === test.output.trim();
       if (!pass) allPassed = false;
@@ -183,7 +164,7 @@ output_text
       const rollNo = localStorage.getItem("rollNo");
 
       const savedData = JSON.parse(localStorage.getItem("savedCodes") || "{}");
-      savedData[`${rollNo}-${problemId}-${language}`] = code;
+      savedData[`${rollNo}-${problemId}-python`] = code;
       localStorage.setItem("savedCodes", JSON.stringify(savedData));
 
       if (!completed.includes(problemId.toString())) {
@@ -207,38 +188,39 @@ output_text
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-sky-100 to-sky-100 text-gray-100">
+    <div className="min-h-screen bg-gradient-to-b from-sky-100 to-sky-100 text-gray-800">
       {warning && (
-        <div className="fixed top-4 right-4 bg-red-600 text-white px-6 py-3 rounded-lg shadow-lg">
+        <div className="fixed top-4 right-4 bg-red-600 text-white px-4 py-2 rounded-lg shadow-lg z-20 sm:px-6 sm:py-3">
           {warning}
         </div>
       )}
 
-{/* Top Navbar */}
-<div className="p-4 flex justify-between items-center bg-sky-100">
-  <div className="flex items-center gap-3">
-    {/* Menu Button First */}
-    <button
-       onClick={() => setSidebarOpen(!sidebarOpen)}
-       className="p-2 rounded bg-black hover:bg-gray-700">
-        <FiMenu className="text-2xl text-white" />
-    </button>
-    {/* Problems Heading Next */}
-    <h1 className="text-xl font-bold text-black">Problems set</h1>
+      {/* Top Navbar */}
+      <div className="p-2 flex justify-between items-center bg-sky-100 z-20 sm:p-4">
+        <div className="flex items-center gap-2 sm:gap-3">
+          {/* Menu Button First */}
+          <button
+            onClick={() => setSidebarOpen(!sidebarOpen)}
+            className="p-1 rounded bg-black hover:bg-gray-700 sm:p-2"
+          >
+            <FiMenu className="text-xl text-white sm:text-2xl" />
+          </button>
+          {/* Problems Heading Next */}
+          <h1 className="text-lg font-bold text-black sm:text-xl">Problems set</h1>
+        </div>
+      </div>
 
-  </div>
-</div>
-
-
-      <div className="flex">
+      <div className="flex flex-col md:flex-row">
         {/* Sidebar */}
         {sidebarOpen && (
-          <div className="w-72 bg-gray-900 p-4 h-[calc(100vh-64px)] overflow-y-auto">
-            <div className="flex justify-between items-center mb-4">
-             <h2 className="text-lg font-semibold text-white">Problems</h2>
-             <span className="text-sm text-black">
-               {completed.length}/{problems.length}
-             </span>
+          <div className="w-full md:w-72 bg-gray-900 p-2 md:p-4 h-[calc(100vh-64px)] overflow-y-auto md:h-screen">
+            <div className="flex justify-between items-center mb-2 md:mb-4">
+              <h2 className="text-base font-semibold text-white md:text-lg">
+                Problems
+              </h2>
+              <span className="text-sm text-black md:text-base">
+                {completed.length}/{problems.length}
+              </span>
             </div>
 
             {problems.map((p, idx) => {
@@ -260,7 +242,7 @@ output_text
                 <button
                   key={p.id}
                   disabled={!isUnlocked}
-                  className={`flex items-center justify-between w-full px-4 py-3 rounded-lg text-left transition-all font-semibold border-l-4 ${
+                  className={`flex items-center justify-between w-full px-2 py-1 md:px-4 md:py-2 rounded-lg text-left transition-all font-semibold border-l-4 ${
                     isSelected
                       ? "bg-gray-700 border-blue-500"
                       : "border-transparent"
@@ -268,7 +250,7 @@ output_text
                     !isUnlocked
                       ? "opacity-50 cursor-not-allowed"
                       : "hover:bg-gray-700/80"
-                  }`}
+                  } text-sm md:text-base`}
                   onClick={() => {
                     if (!isUnlocked) return;
                     setCurrentIdx(idx);
@@ -276,16 +258,16 @@ output_text
                     const savedData = JSON.parse(
                       localStorage.getItem("savedCodes") || "{}"
                     );
-                    const savedCode = savedData[`${rollNo}-${p.id}-${language}`];
-                    setCode(savedCode || p.starterCode?.[language] || "");
+                    const savedCode = savedData[`${rollNo}-${p.id}-python`];
+                    setCode(savedCode || p.starterCode?.python || "");
                     setResults([]);
                     setFinalResult("");
                     setEditorKey((prev) => prev + 1);
                     setSidebarOpen(false);
                   }}
                 >
-                  <div className="flex items-center gap-3">
-                    <span className="text-lg">
+                  <div className="flex items-center gap-2">
+                    <span className="text-base md:text-lg">
                       {isUnlocked ? (
                         isSolved ? (
                           <FiCheck className="text-green-400" />
@@ -296,9 +278,7 @@ output_text
                         <FiLock className="text-gray-500" />
                       )}
                     </span>
-                    <span>
-                      {idx + 1}. {p.title}
-                    </span>
+                    <span>{idx + 1}. {p.title}</span>
                   </div>
                   <span className={`text-xs font-bold ${diffColor}`}>
                     {p.difficulty}
@@ -310,57 +290,24 @@ output_text
         )}
 
         {/* Split Main Panel */}
-        <div className="flex-1 flex">
+        <div className="flex-1 flex flex-col md:flex-row">
           {/* Left Side - Problem */}
-           <div className="w-1/2 bg-sky-100 p-6 h-screen overflow-y-auto border-2 border-sky-700 rounded-lg">
-              <Problem problem={problems[currentIdx]} />
-           </div>
-
+          <div className="w-full md:w-1/2 bg-sky-100 p-2 md:p-4 h-[40vh] md:h-screen overflow-y-auto border-2 border-sky-700 rounded-lg">
+            <Problem problem={problems[currentIdx]} />
+          </div>
 
           {/* Right Side - Editor & Results */}
-          <div className="w-1/2 bg-sky-100 p-6 flex flex-col border-2 border-sky-700 rounded-lg">
-            <div className="mb-2 flex items-center gap-4">
-              <label className="text-yellow-500 font-semibold text-sm">
-                Select Language:
-              </label>
-              <select
-                value={language}
-                onChange={(e) => {
-                  setLanguage(e.target.value);
-                  const rollNo = localStorage.getItem("rollNo");
-                  const savedData = JSON.parse(
-                    localStorage.getItem("savedCodes") || "{}"
-                  );
-                  const savedCode =
-                    savedData[
-                      `${rollNo}-${problems[currentIdx].id}-${e.target.value}`
-                    ];
-                  setCode(
-                    savedCode ||
-                      problems[currentIdx].starterCode?.[e.target.value] ||
-                      ""
-                  );
-                  setEditorKey((prev) => prev + 1);
-                }}
-                className="bg-gray-700 text-white rounded-lg px-3 py-1"
-              >
-                <option value="python">Python</option>
-                <option value="cpp">C++</option>
-                <option value="c">C</option>
-                <option value="java">Java</option>
-              </select>
-            </div>
-
+          <div className="w-full md:w-1/2 bg-sky-100 p-2 md:p-4 flex flex-col border-2 border-sky-700 rounded-lg">
             <Editor
               key={editorKey}
-              height="550px"
-              language={language}
+              height="300px" // Reduced height for mobile
+              language="python"
               theme="vs-dark"
               value={code}
               onChange={(value) => setCode(value || "")}
               options={{
                 minimap: { enabled: false },
-                fontSize: 16,
+                fontSize: 14, // Reduced font size for mobile
                 fontFamily: "Fira Code, monospace",
                 lineNumbers: "on",
               }}
@@ -379,36 +326,36 @@ output_text
               }}
             />
 
-            <div className="mt-4 flex gap-4 flex-wrap">
+            <div className="mt-2 flex gap-2 flex-wrap">
               <button
                 onClick={runCode}
                 disabled={isLoading || !code || code.trim() === ""}
-                className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center gap-2"
+                className="bg-blue-600 hover:bg-blue-700 text-white px-2 py-1 rounded-lg flex items-center gap-1 text-sm md:text-base"
               >
                 <FiPlay /> {isLoading ? "Running..." : "Run Code"}
               </button>
               <button
                 onClick={submitCode}
                 disabled={isLoading || !code || code.trim() === ""}
-                className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg flex items-center gap-2"
+                className="bg-green-600 hover:bg-green-700 text-white px-2 py-1 rounded-lg flex items-center gap-1 text-sm md:text-base"
               >
                 <FiCheckCircle />{" "}
                 {isLoading ? "Submitting..." : "Submit Code"}
               </button>
             </div>
 
-            <div className="mt-6 flex-1 overflow-y-auto">
+            <div className="mt-2 flex-1 overflow-y-auto">
               {results.length > 0 ? (
                 results.map((r, i) => (
                   <div
                     key={i}
-                    className={`p-4 mb-3 rounded-lg border ${
+                    className={`p-2 mb-1 rounded-lg border ${
                       r.pass
                         ? "bg-green-900 border-green-700"
                         : "bg-red-900 border-red-700"
-                    }`}
+                    } text-sm md:text-base`}
                   >
-                    <div className="font-bold flex items-center gap-2 text-lg">
+                    <div className="font-bold flex items-center gap-1">
                       {r.pass ? (
                         <FiCheckCircle className="text-green-400" />
                       ) : (
@@ -416,7 +363,7 @@ output_text
                       )}
                       {r.pass ? "Passed" : "Failed"} - Test Case {i + 1}
                     </div>
-                    <div className="text-sm mt-2">
+                    <div className="text-xs mt-1 md:text-sm">
                       <div>
                         <b>Input:</b> <code>{r.input}</code>
                       </div>
@@ -430,7 +377,7 @@ output_text
                   </div>
                 ))
               ) : (
-                <div className="text-gray-400 text-center">
+                <div className="text-gray-500 text-center text-sm md:text-base">
                   Run code to see results...
                 </div>
               )}
@@ -438,7 +385,7 @@ output_text
 
             {finalResult && (
               <div
-                className={`mt-4 text-center font-bold text-lg rounded-xl p-4 ${
+                className={`mt-2 text-center font-bold text-sm md:text-lg rounded-lg p-2 ${
                   finalResult.includes("passed")
                     ? "bg-green-700 text-white"
                     : "bg-red-700 text-white"
