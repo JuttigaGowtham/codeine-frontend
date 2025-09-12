@@ -213,9 +213,9 @@ output_text
       <div className="flex flex-col md:flex-row">
         {/* Sidebar */}
         {sidebarOpen && (
-          <div className="w-full md:w-72 bg-gray-900 p-2 md:p-4 h-[calc(100vh-64px)] overflow-y-auto md:h-screen">
+          <div className="w-full md:w-72 bg-sky-100 p-2 md:p-4 h-[calc(100vh-64px)] overflow-y-auto md:h-screen">
             <div className="flex justify-between items-center mb-2 md:mb-4">
-              <h2 className="text-base font-semibold text-white md:text-lg">
+              <h2 className="text-base font-semibold text-black md:text-lg">
                 Problems
               </h2>
               <span className="text-sm text-black md:text-base">
